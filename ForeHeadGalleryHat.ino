@@ -10,29 +10,33 @@
 
 #define DEBUG 1
 
-struct TextSubmission{
+const int PHOTO_AMOUNT;
+const int TEXT_AMOUNT;
+
+struct textsubmission{
     char author[50];
     char text[200];
-} submission;
+};
 
-struct PhotoSubmission{
+struct photosubmission{
     char author[50];
     char __attribute__ ((progmem)) photo [1024];
-} photosubmission;
-
-const uint8_t* images[] = {
-    stretch,
-    wouda,
-    johntab,
-    glasses,
-    thankyou,
-    opensub
 };
 
-const uint8_t* opensubimages[]={
-    wouda,
-    opensub
-};
+EEPROM_readAnything(0, PHOTO_AMOUNT);
+EEPROM_readAnything(1, TEXT_AMOUNT);
+
+stuct photosubmission photosubmissions[PHOTO_AMOUNT];
+stuct textsubmission textsubmissions[TEXT_AMOUNT];
+
+//Store this shite as a stuct in EEProm
+for(int i = 0; i < PHOTO_AMOUNT; i+=2){
+    EEPROM_readAnything(i+2, photosubmissions[i]);
+}
+
+for(int i = PHOTO_AMOUNT; i < TEXT_AMOUNT; i+=2){
+    EEPROM_readAnything(i, textsubmissions[i]); 
+}
 
 ScreenController screencontroller(10,9,8,7,6);
 SendReceive sendrecieve;
@@ -44,14 +48,12 @@ States currentstate = SHOWSUBMISSIONS;
 long currenttime;
 
 char* recievedmessage;
-char messagebuffer[200];
 
 void setup(){
     Serial.begin(9600);
     pinMode(BUTTON_PIN, INPUT);
     pinMode(BACKLIGHT_PIN, OUTPUT);
     attachInterrupt(BUTTON_PIN, press, RISING);
-    EEPROM_readAnything(0, messagebuffer);
     screencontroller.init();
     analogWrite(BACKLIGHT_PIN, 100);
 }
@@ -75,9 +77,6 @@ void loop(){
 void recieve(){
     sendrecieve.recieve();
     if(sendrecieve.ismessageready()){
-        for(int i = 0; i<200; i++){
-            messagebuffer[i] = sendrecieve.messageholder[i];
-        }
         EEPROM_writeAnything(0, messagebuffer);
     }
 }
