@@ -1,8 +1,8 @@
  #include "SendReceive.h"
 
-bool SendReceive :: scan(){
+bool SendReceive :: scan(const char* checked){
     while(Serial.available() > 0){
-        if(Serial.read() == 35)
+        if(Serial.read() == (checked[0] - '0'))
             return true;
     }
     return false;
@@ -12,24 +12,18 @@ char* SendReceive :: getmessage(){
     return messageholder;
 }
 
-void SendReceive :: recieve(){
-    static bool isready = false;
+void SendReceive :: recieve(int length){
     static int pos = 0; 
+    char buffer[length];
     char grabbed;
-    if(isready){
-        grabbed = Serial.read();
-        if(pos < 200 && grabbed != 255){
-            messageholder[pos] = grabbed;
-            pos++;
-        }else{
-            messageholder[pos] = '\0';
-            pos = 0;
-            Serial.println("Message Recieved Successfully");
-            messageready = true;
-            isready = false;
-        }
-    }else if(scan()){
-        isready = true;
+    grabbed = Serial.read();
+    if(pos < length && grabbed != 255){
+        buffer[pos] = grabbed;
+        pos++;
+    }else{
+        pos = 0;
+        messageholder = buffer;
+        messageready = true;
     }
 }
 

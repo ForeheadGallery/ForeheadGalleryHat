@@ -1,6 +1,10 @@
 #include <EEPROM.h>
 #include <Arduino.h>  // for type definitions
 
+#ifndef EEPROMANYTHING_H
+#define EEPROMANYTHING_H
+#endif
+
 template <class T> int EEPROM_writeAnything(int ee, const T& value)
 {
     const byte* p = (const byte*)(const void*)&value;
