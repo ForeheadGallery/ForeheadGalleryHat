@@ -2,7 +2,7 @@
 
 class SendReceive{
     public:
-        void recieve(int length);
+        void recieve(int length, int endascii = 255);
         char* getmessage();
         void send();
         bool messageready = false;

@@ -13,6 +13,7 @@ public:
     void loopimages(const uint8_t* images[], int size);
     void looplines(char *(*messages)[12]);
     void showword(char* word);
+    void showtext(char* text);
     ST7565 disp;
 
 private:

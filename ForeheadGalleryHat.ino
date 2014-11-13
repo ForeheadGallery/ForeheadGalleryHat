@@ -12,22 +12,28 @@
 
 #define DEBUG 1
 
+#define AUTHOR_CHAR 35
+#define PHOTO_CHAR 60
+#define TEXT_CHAR 62
+
 const int PHOTO_SIZE = 1028;
 const int TEXT_SIZE = 200;
+const int AUTHOR_SIZE = 50;
 
 const int PHOTO_AMOUNT = 20;
 const int TEXT_AMOUNT = 20;
 
-char* textbuffer;
-char* photobuffer;
+char textbuffer[TEXT_SIZE];
+char authorbuffer[AUTHOR_SIZE];
+char photobuffer[PHOTO_SIZE];
 
 struct textsubmission{
-    char* author;
+    char author[AUTHOR_SIZE];
     char text[TEXT_SIZE];
 };
 
 struct photosubmission{
-    char* author;
+    char author[AUTHOR_SIZE];
     uint8_t __attribute__ ((progmem)) photo [PHOTO_SIZE];
 };
 
@@ -66,12 +72,13 @@ void setup(){
     attachInterrupt(BUTTON_PIN, press, RISING);
     screencontroller.init();
     analogWrite(BACKLIGHT_PIN, 100);
+    screencontroller.showword("done");
 }
 
 void loop(){
     currenttime = millis();
     if(Serial.available()){
-      currentstate = RECIEVENEW;
+        currentstate = RECIEVENEW;
     }   
     switch(currentstate){
         case SHOWSUBMISSIONS:
@@ -89,54 +96,67 @@ void recieve(){
     static bool ready = false;
     switch(recievestage){
         case AUTHOR:
-            if(gotchar("#")){
-                ready = true;
-            }
             if (ready == true){
                 sendrecieve.recieve(50);
                 if(sendrecieve.ismessageready()){ 
-                    textbuffer = sendrecieve.getmessage();
+                    for(int i = 0; i < AUTHOR_SIZE; i++){
+
+                        authorbuffer[i] = sendrecieve.getmessage()[i];
+                    }
+                    Serial.print("got ");
+                    Serial.println(authorbuffer);
                     ready = false;
-                    Serial.println("sent now checking for photo or text");
-                    if(gotchar(">")){
-                        recievestage = PHOTO;
-                    }else if(gotchar("@")){
-                        recievestage = TEXT;
+                    while(recievestage == AUTHOR){
+                        if(gotchar(PHOTO_CHAR)){
+                            recievestage = PHOTO;
+                        }else if(gotchar(TEXT_CHAR)){
+                            recievestage = TEXT;
+                        }
                     }
                 }
+            }else if(gotchar(AUTHOR_CHAR)){
+                ready = true;
             }
-        break;
+            break;
 
         case PHOTO:
-            sendrecieve.recieve(1028);
+            Serial.println("getting photo");
             if(sendrecieve.ismessageready()){
-                photosubmissionbuffer.author = textbuffer;
-                photobuffer = sendrecieve.getmessage();
+                for(int i = 0; i < AUTHOR_SIZE; i++){
+                    photosubmissionbuffer.author[i] = authorbuffer[i];
+                }
                 for(int i = 0; i < PHOTO_SIZE; i++){
-                    photosubmissionbuffer.photo[i] = photobuffer[i];
+                    photosubmissionbuffer.photo[i] = sendrecieve.getmessage()[i];
                 }
                 showphotosubmission(photosubmissionbuffer);
+            }else{
+                sendrecieve.recieve(1028);
             }
-        break;
+            break;
+
         case TEXT:
-            sendrecieve.recieve(200);
+            sendrecieve.recieve(TEXT_SIZE);
             if(sendrecieve.ismessageready()){
-                textsubmissionbuffer.author = textbuffer;
+                for(int i = 0; i < AUTHOR_SIZE; i++){
+                    textsubmissionbuffer.author[i] = authorbuffer[i];
+                }
                 for(int i = 0; i < TEXT_SIZE; i++){
                     textsubmissionbuffer.text[i] = sendrecieve.getmessage()[i];
                 }
                 showtextsubmission(textsubmissionbuffer);
-            } 
-                
-        break;
+            }
+
+            break;
     }
 }
 
 void showtextsubmission(struct textsubmission ts){
-    screencontroller.showword(ts.author);
-    delay(2000);
-    screencontroller.showword(ts.text);
-    delay(10000);
+    while(true){
+        screencontroller.showword(ts.author);
+        delay(2000);
+        screencontroller.showtext(ts.text);
+        delay(2000);
+    }
 };
 
 void showphotosubmission(struct photosubmission ps){
@@ -146,9 +166,9 @@ void showphotosubmission(struct photosubmission ps){
     delay(10000);
 };
 
-bool gotchar(const char* checked){
+bool gotchar(int checked){
     while(Serial.available() > 0){
-        if(Serial.read() == (checked[0] - '0'))
+        if(Serial.read() == checked)
             return true;
     }
     return false;

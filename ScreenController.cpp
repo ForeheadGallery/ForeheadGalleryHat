@@ -50,6 +50,11 @@ void ScreenController :: loopimages(const uint8_t* images[], int size){
     }
 }
 
+void ScreenController :: showtext(char* text){
+    disp.clear();
+    disp.drawstring(1, 1, text);
+    disp.display();
+}
 void ScreenController :: showword(char* word){
     int offset = getcenteroffset(strlen(word));
     disp.clear();
