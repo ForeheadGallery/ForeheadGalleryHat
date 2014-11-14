@@ -1,4 +1,5 @@
 #include <ST7565.h>
+#include "stretch.h"
 #include <EEPROM.h>
 #ifndef EEPROMANYTHING_H
 #include "EEPROMAnything.h"
@@ -16,7 +17,7 @@
 #define PHOTO_CHAR 60
 #define TEXT_CHAR 62
 
-const int PHOTO_SIZE = 1028;
+const int PHOTO_SIZE = 1024;
 const int TEXT_SIZE = 200;
 const int AUTHOR_SIZE = 50;
 
@@ -100,17 +101,17 @@ void recieve(){
                 sendrecieve.recieve(50);
                 if(sendrecieve.ismessageready()){ 
                     for(int i = 0; i < AUTHOR_SIZE; i++){
-
                         authorbuffer[i] = sendrecieve.getmessage()[i];
                     }
                     Serial.print("got ");
                     Serial.println(authorbuffer);
                     ready = false;
                     while(recievestage == AUTHOR){
-                        if(gotchar(PHOTO_CHAR)){
-                            recievestage = PHOTO;
-                        }else if(gotchar(TEXT_CHAR)){
+                        char sr_read = Serial.read();
+                        if(sr_read == TEXT_CHAR){
                             recievestage = TEXT;
+                        }else if(sr_read == PHOTO_CHAR){
+                            recievestage = PHOTO;
                         }
                     }
                 }
@@ -120,29 +121,27 @@ void recieve(){
             break;
 
         case PHOTO:
-            Serial.println("getting photo");
+            sendrecieve.recieve(PHOTO_SIZE, false);
             if(sendrecieve.ismessageready()){
-                for(int i = 0; i < AUTHOR_SIZE; i++){
-                    photosubmissionbuffer.author[i] = authorbuffer[i];
-                }
-                for(int i = 0; i < PHOTO_SIZE; i++){
-                    photosubmissionbuffer.photo[i] = sendrecieve.getmessage()[i];
-                }
+                memcpy(photosubmissionbuffer.author, authorbuffer, AUTHOR_SIZE);
+                memcpy(photosubmissionbuffer.photo, sendrecieve.getmessage(), 1024);
+                /* for(int i = 0; i < PHOTO_SIZE; i++){ */
+                /*     photosubmissionbuffer.photo[i] = sendrecieve.getmessage()[i]; */
+                /*     Serial.print("stretch: "); */
+                /*     Serial.println(stretch[i]); */
+                /*     Serial.print("got: "); */
+                /*     Serial.println(sendrecieve.getmessage()[i]); */
+                /*     delay(10); */
+                /* } */
                 showphotosubmission(photosubmissionbuffer);
-            }else{
-                sendrecieve.recieve(1028);
             }
             break;
 
         case TEXT:
             sendrecieve.recieve(TEXT_SIZE);
             if(sendrecieve.ismessageready()){
-                for(int i = 0; i < AUTHOR_SIZE; i++){
-                    textsubmissionbuffer.author[i] = authorbuffer[i];
-                }
-                for(int i = 0; i < TEXT_SIZE; i++){
-                    textsubmissionbuffer.text[i] = sendrecieve.getmessage()[i];
-                }
+                memcpy(textsubmissionbuffer.author, authorbuffer, AUTHOR_SIZE);
+                memcpy(textsubmissionbuffer.text, sendrecieve.getmessage(), TEXT_SIZE);
                 showtextsubmission(textsubmissionbuffer);
             }
 
@@ -160,10 +159,15 @@ void showtextsubmission(struct textsubmission ts){
 };
 
 void showphotosubmission(struct photosubmission ps){
-    screencontroller.showword(ps.author);
-    delay(2000);
-    screencontroller.showimage(ps.photo);
-    delay(10000);
+    while(true){
+        screencontroller.showword(ps.author);
+        delay(2000);
+        screencontroller.showimage(ps.photo);
+        delay(10000);
+        Serial.println( "next");
+        screencontroller.showimage(stretch);
+        delay(10000);
+    }
 };
 
 bool gotchar(int checked){

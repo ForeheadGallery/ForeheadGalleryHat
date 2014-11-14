@@ -2,13 +2,13 @@
 
 class SendReceive{
     public:
-        void recieve(int length, int endascii = 255);
-        char* getmessage();
+        void recieve(int length, bool endascii = true);
+        uint8_t* getmessage();
         void send();
         bool messageready = false;
         bool ismessageready();
         bool scan(const char* checked);
         bool isready = false;
-        char* messageholder;
+        uint8_t* messageholder;
     private:
 };

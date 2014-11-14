@@ -1,27 +1,31 @@
  #include "SendReceive.h"
+#include "stretch.h"
 
-bool SendReceive :: scan(const char* checked){
-    while(Serial.available() > 0){
-        if(Serial.read() == (checked[0] - '0'))
-            return true;
-    }
-    return false;
-}
-
-char* SendReceive :: getmessage(){
+unsigned char* SendReceive :: getmessage(){
     return messageholder;
 }
 
-void SendReceive :: recieve(int length, int endascii){
-    static int pos = 0; ;
-    char grabbed;
-    char buffer[length];
-    grabbed = Serial.read();
-    if(pos < length && grabbed != endascii){
+void SendReceive :: recieve(int length, bool endascii){
+    static int pos = 0;
+    int checknum;
+    char grabbed = Serial.read();
+    unsigned char buffer[length];
+    if(endascii){
+        checknum = 255;
+    }else{
+        checknum = 500;
+    }
+    if(pos < length && grabbed != checknum){
+        Serial.print("buf ");
+        Serial.println(grabbed,DEC);
+        Serial.print("stretch  ");
+        Serial.println(stretch[pos]);
         buffer[pos] = grabbed;
         pos++;
     }else{
-        buffer[pos] = '\0';
+        if(endascii){
+            buffer[pos] = '\0';
+        }
         pos = 0;
         messageholder = buffer;
         messageready = true;
