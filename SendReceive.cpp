@@ -22,6 +22,7 @@ void SendReceive :: recieve(int length, bool endascii){
         Serial.println(stretch[pos]);
         buffer[pos] = grabbed;
         pos++;
+        delay(15);
     }else{
         if(endascii){
             buffer[pos] = '\0';
