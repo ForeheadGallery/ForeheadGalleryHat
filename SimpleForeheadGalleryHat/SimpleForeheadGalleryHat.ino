@@ -3,27 +3,14 @@
 #include "opensub.h"
 #include "austinspiral.h"
 #include "ScreenController.h"
+#define TEXT_SIZE 200
+#define PHOTO_SIZE 1024
 
 #define BUTTON_PIN 11
 
 #define BACKLIGHT_PIN 3
 
 #define DEBUG 1
-
-#define AUTHOR_CHAR 35
-#define PHOTO_CHAR 60
-#define TEXT_CHAR 62
-
-const int PHOTO_SIZE = 1024;
-const int TEXT_SIZE = 200;
-const int AUTHOR_SIZE = 50;
-
-const int PHOTO_AMOUNT = 20;
-const int TEXT_AMOUNT = 20;
-
-char textbuffer[TEXT_SIZE];
-char authorbuffer[AUTHOR_SIZE];
-char photobuffer[PHOTO_SIZE];
 
 struct textsubmission{
     char* author;
@@ -61,7 +48,7 @@ void setup(){
     austinspirals.author = "By Austin Retzlaff";
     memcpy(austinspirals.photo, austinspiral, 1024);
 
-    openforsub.author = "tiny.cc/submittoforehead";
+    openforsub.author = "tiny.cc/fgsubmit";
     memcpy(openforsub.photo, opensub, 1024);
    
     photosubmission photosubmissions[] = {openforsub, austineye, austinspirals, openforsub};
@@ -93,7 +80,7 @@ void showphotosubmission(struct photosubmission ps){
         screencontroller.showimage(ps.photo);
         delay(20000);
         screencontroller.showword(ps.author);
-        delay(3000);
+        delay(10000);
 };
 
 bool gotchar(int checked){
