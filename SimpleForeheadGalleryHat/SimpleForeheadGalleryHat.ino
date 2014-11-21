@@ -2,6 +2,9 @@
 #include "austineyes.h"
 #include "opensub.h"
 #include "austinspiral.h"
+#include "ElydahWomanDoing.h"
+#include "KevinHooked.h"
+#include "lukethersufly.h"
 #include "ScreenController.h"
 #define TEXT_SIZE 200
 #define PHOTO_SIZE 1024
@@ -9,6 +12,7 @@
 #define BUTTON_PIN 11
 
 #define BACKLIGHT_PIN 3
+#define BACKLIGHT_HIGH 100
 
 #define DEBUG 1
 
@@ -22,72 +26,63 @@ struct photosubmission{
     uint8_t __attribute__ ((progmem)) photo [PHOTO_SIZE];
 };
 
-
-photosubmission photosubmissionbuffer;
-textsubmission textsubmissionbuffer;
-
-
 ScreenController screencontroller(10,9,8,7,6);
-
-enum States {SHOWSUBMISSIONS};
-
-States currentstate = SHOWSUBMISSIONS;
-
-long currenttime;
-
-char* recievedmessage;
 
 void setup(){
     Serial.begin(9600);
-    photosubmission austineye;
-    photosubmission austinspirals;
-    photosubmission openforsub;
-    austineye.author = "By Austin Retzlaff";
-    memcpy(austineye.photo, austineyes, 1024);
-
-    austinspirals.author = "By Austin Retzlaff";
-    memcpy(austinspirals.photo, austinspiral, 1024);
-
-    openforsub.author = "tiny.cc/fgsubmit";
-    memcpy(openforsub.photo, opensub, 1024);
-   
-    photosubmission photosubmissions[] = {openforsub, austineye, austinspirals, openforsub};
+#include "photosubmissions.h"
+#include "textsubmissions.h"
     pinMode(BUTTON_PIN, INPUT);
     pinMode(BACKLIGHT_PIN, OUTPUT);
+    attachInterrupt(BUTTON_PIN, press, RISING);
     screencontroller.init();
-    analogWrite(BACKLIGHT_PIN, 100);
-
     while(true){
         for(int i=0; i < sizeof(photosubmissions)/sizeof(*photosubmissions); i++){
             showphotosubmission(photosubmissions[i]);
         }
-}
+    }
 }
 
 void loop(){
 }
 
 void showtextsubmission(struct textsubmission ts){
-    while(true){
-        screencontroller.showword(ts.author);
-        delay(2000);
-        screencontroller.showtext(ts.text);
-        delay(2000);
-    }
+    screencontroller.showtext(ts.text);
+    fadein();
+    delay(2000);
+    screencontroller.showword(ts.author);
+    delay(2000);
+    fadeout();
 };
 
 void showphotosubmission(struct photosubmission ps){
-        screencontroller.showimage(ps.photo);
-        delay(20000);
-        screencontroller.showword(ps.author);
-        delay(10000);
+    screencontroller.showimage(ps.photo);
+    fadein();
+    delay(20000);
+    fadeout();
+    screencontroller.showword(ps.author);
+    fadein();
+    delay(10000);
+    fadeout();
 };
 
-bool gotchar(int checked){
-    while(Serial.available() > 0){
-        if(Serial.read() == checked)
-            return true;
+void fadeout(){
+    for(int i = BACKLIGHT_HIGH; i > 0; i--){
+        analogWrite(BACKLIGHT_PIN, i);
+        delay(10);
     }
-    return false;
-}
+};
 
+void fadein(){
+    for(int i = 0; i < BACKLIGHT_HIGH; i++){
+        analogWrite(BACKLIGHT_PIN, i);
+        delay(10);
+    }
+}
+void press(){
+    Serial.println("goit reosss");
+    fadeout();
+    screencontroller.showword("tiny.cc/fgsubmit");
+    fadein();
+    delay(4000);
+}
