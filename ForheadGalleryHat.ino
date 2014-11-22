@@ -2,11 +2,11 @@
 #include "austineyes.h"
 #include "opensub.h"
 #include "austinspiral.h"
+#include "ryanjlash.h"
 #include "ElydahWomanDoing.h"
 #include "KevinHooked.h"
 #include "lukethersufly.h"
 #include "ScreenController.h"
-#define TEXT_SIZE 200
 #define PHOTO_SIZE 1024
 
 #define BUTTON_PIN 11
@@ -18,7 +18,7 @@
 
 struct textsubmission{
     char* author;
-    char text[TEXT_SIZE];
+    char* text;
 };
 
 struct photosubmission{
@@ -40,6 +40,9 @@ void setup(){
         for(int i=0; i < sizeof(photosubmissions)/sizeof(*photosubmissions); i++){
             showphotosubmission(photosubmissions[i]);
         }
+        for(int i=0; i < sizeof(textsubmissions)/sizeof(*textsubmissions); i++){
+            showtextsubmission(textsubmissions[i]);
+        }
     }
 }
 
@@ -49,9 +52,9 @@ void loop(){
 void showtextsubmission(struct textsubmission ts){
     screencontroller.showtext(ts.text);
     fadein();
-    delay(2000);
+    delay(20000);
     screencontroller.showword(ts.author);
-    delay(2000);
+    delay(10000);
     fadeout();
 };
 
@@ -80,7 +83,6 @@ void fadein(){
     }
 }
 void press(){
-    Serial.println("goit reosss");
     fadeout();
     screencontroller.showword("tiny.cc/fgsubmit");
     fadein();

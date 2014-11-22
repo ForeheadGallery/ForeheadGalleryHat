@@ -1,4 +1,5 @@
 photosubmission austineye;
+photosubmission ryankjlash;
 photosubmission austinspirals;
 photosubmission openforsub;
 photosubmission ElydahWomanDoing;
@@ -7,6 +8,9 @@ photosubmission KevinHooked;
 
 austineye.author = "By Austin Retzlaff";
 memcpy(austineye.photo, austineyes, 1024);
+
+ryankjlash.author = "By Ryan Kulas";
+memcpy(ryankjlash.photo, ryanjlash, 1024);
 
 austinspirals.author = "By Austin Retzlaff";
 memcpy(austinspirals.photo, austinspiral, 1024);
@@ -23,5 +27,5 @@ memcpy(lukethersufly.photo, thersurfly, 1024);
 openforsub.author = "tiny.cc/fgsubmit";
 memcpy(openforsub.photo, opensub, 1024);
 
-photosubmission photosubmissions[] = {openforsub, lukethersufly, ElydahWomanDoing, KevinHooked, austineye, austinspirals, openforsub};
+photosubmission photosubmissions[] = {openforsub, ryankjlash, lukethersufly, ElydahWomanDoing, KevinHooked, austineye, austinspirals, openforsub};
 
