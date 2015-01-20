@@ -5,6 +5,22 @@ photosubmission openforsub;
 photosubmission ElydahWomanDoing;
 photosubmission lukethersufly;
 photosubmission KevinHooked;
+photosubmission EllenPantsAreKites;
+photosubmission EllenText;
+photosubmission KAButtHead;
+photosubmission KAHeadButt;
+
+KAButtHead.author = "By Kaethe Armitage";
+memcpy(KAButtHead.photo, KAbutthead, 1024);
+
+KAHeadButt.author = "By Kaethe Armitage";
+memcpy(KAHeadButt.photo, KAheadbutt, 1024);
+
+EllenText.author = "By Ellen Oliver";
+memcpy(EllenText.photo, Ellentext, 1024);
+
+EllenPantsAreKites.author = "By Ellen Oliver";
+memcpy(EllenPantsAreKites.photo, Ellenpantsarekites, 1024);
 
 austineye.author = "By Austin Retzlaff";
 memcpy(austineye.photo, austineyes, 1024);
