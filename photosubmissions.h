@@ -43,5 +43,5 @@ memcpy(lukethersufly.photo, thersurfly, 1024);
 openforsub.author = "tiny.cc/fgsubmit";
 memcpy(openforsub.photo, opensub, 1024);
 
-photosubmission photosubmissions[] = {openforsub, ryankjlash, lukethersufly, ElydahWomanDoing, KevinHooked, austineye, austinspirals, openforsub};
+photosubmission photosubmissions[] = {openforsub, KAButtHead, KAHeadButt, EllenPantsAreKites, EllenText, ryankjlash, lukethersufly, ElydahWomanDoing, KevinHooked, austineye, austinspirals, openforsub};
 
